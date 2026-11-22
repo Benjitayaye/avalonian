@@ -1,0 +1,124 @@
+{
+  "normal": {
+    "nombre": "Normal",
+    "roles": {
+      "Main Tank": {
+        "cupos": 1,
+        "build": "https://cdn.discordapp.com/attachments/1498722568260026409/1520186198880948224/image.png",
+        "loot": [
+          "Plata Energia Ava"
+        ]
+      },
+      "Off Tank": {
+        "cupos": 1,
+        "build": "https://render.albiononline.com/v1/item/T8_MAIN_MACE_HELL@4",
+        "loot": [
+          "Bolsas"
+        ]
+      },
+      "Great Arcane": {
+        "cupos": 1,
+        "build": "",
+        "loot": [
+          "Cascos"
+        ]
+      },
+      "Healer": {
+        "cupos": 1,
+        "build": "https://render.albiononline.com/v1/item/T8_MAIN_NATURESTAFF_AVALON@4",
+        "loot": [
+          "Túnicas"
+        ]
+      },
+      "ShadowCaller": {
+        "cupos": 1,
+        "build": "https://render.albiononline.com/v1/item/T8_MAIN_CURSEDSTAFF_AVALON@4",
+        "loot": [
+          "Zapatos"
+        ]
+      },
+      "Falce": {
+        "cupos": 3,
+        "build": "https://render.albiononline.com/v1/item/T8_2H_SCYTHE_CRYSTAL@4",
+        "loot": [
+          "Túnicas",
+          "Off Hands",
+          "Capas"
+        ]
+      },
+      "Falce Daga": {
+        "cupos": 2,
+        "build": "",
+        "loot": [
+          "Armas",
+          "Armas"
+        ]
+      },
+      "Scout": {
+        "cupos": 1,
+        "build": "",
+        "loot": [
+          "Runas"
+        ]
+      }
+    }
+  },
+  "sin_ga": {
+    "nombre": "Sin GA",
+    "roles": {
+      "Main Tank": {
+        "cupos": 1,
+        "build": "https://cdn.discordapp.com/attachments/1498722568260026409/1520186198880948224/image.png",
+        "loot": [
+          "Plata"
+        ]
+      },
+      "Off Tank": {
+        "cupos": 1,
+        "build": "https://cdn.discordapp.com/attachments/1520169637009162290/1520585296436133908/image.png",
+        "loot": [
+          "Off Hands"
+        ]
+      },
+      "Pierce": {
+        "cupos": 1,
+        "build": "https://media.discordapp.net/attachments/1520169637009162290/1520589025344229446/image.png",
+        "loot": [
+          "Zapatos"
+        ]
+      },
+      "Healer": {
+        "cupos": 1,
+        "build": "https://media.discordapp.net/attachments/1520169637009162290/1520587734308360233/image.png",
+        "loot": [
+          "Túnicas"
+        ]
+      },
+      "Falce": {
+        "cupos": 3,
+        "build": "https://media.discordapp.net/attachments/1520169637009162290/1520591323315310702/image.png",
+        "loot": [
+          "Armas mele",
+          "Armas Distancia",
+          "Armas Secundarias"
+        ]
+      },
+      "Falce Daga": {
+        "cupos": 3,
+        "build": "https://media.discordapp.net/attachments/1520169637009162290/1520591104058196028/image.png",
+        "loot": [
+          "Mochilas",
+          "Capas",
+          "Artefactos"
+        ]
+      },
+      "Scout": {
+        "cupos": 1,
+        "build": "https://media.discordapp.net/attachments/1520169637009162290/1520594154005073951/image.png",
+        "loot": [
+          "Sobrante"
+        ]
+      }
+    }
+  }
+}

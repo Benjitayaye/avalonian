@@ -1,0 +1,158 @@
+AvaRaid 22.1 · Guía del gremio
+Actualización del RAR definitivo V22. Requiere Python 3.10 o posterior.
+Los saldos son silver del registro del gremio; no se transfiere plata dentro de Albion.
+
+1. ACTUALIZAR EN WINDOWS
+
+Cierra la consola del bot anterior. Extrae el ZIP completo y abre INICIAR_WINDOWS.bat.
+Usa la misma cuenta y la misma carpeta de datos que antes. La ruta normal de la V22 es:
+  %LOCALAPPDATA%\AvaRaidNuevaBase\avalonianas.sqlite3
+Si antes elegiste otra ruta mediante AVARAID_DATOS, mantenla. El bot actualiza la base
+sin borrar roles, AVA ni billeteras. El ZIP no contiene una base vacía ni credenciales.
+Si tenías el token guardado para tu usuario, se sigue utilizando. Si solo estaba en el
+.env del RAR anterior, configura tu token vigente con CONFIGURAR_TOKEN.bat o con la
+variable DISCORD_TOKEN. No subas el .env a GitHub. Puedes ejecutar COMPROBAR_BOT.bat
+para verificar los 19 comandos sin conectarte a Discord. Mantén una sola instancia.
+
+2. AVA EN CURSO Y PAGOS PENDIENTES
+
+Usa /configurar-ava economy:@Economy silver_tab:#silver-tabs-carnicerias si aún no
+están configurados. La tarjeta del mismo evento muestra:
+  Programada → En curso · Pendiente de pago → Pagada.
+  Si se cancela, muestra Cancelada.
+Abrir la vista previa del pago no cambia el estado ni los saldos. Al confirmarlo,
+el bot actualiza el anuncio. Los estados se recuperan al reiniciar. Al actualizar
+desde V22, corrige por turnos las Silver Tabs ya vinculadas sin crear hilos extra.
+
+  /avas-pendientes
+  /avas-pendientes pagina:2
+Solo el rol Economy ve este listado privado. Incluye todas las AVA iniciadas de
+este servidor que aún no tienen reparto, comenzando por la más antigua. Muestra
+10 por página, el total, los titulares y los enlaces. Si Economy ya está configurado,
+no tienes que volver a asignarlo. /pagar_evento conserva la vista previa y pide
+confirmación; /force-join y /force-leave permiten ajustar titulares antes del pago.
+
+3. RECIBOS PÚBLICOS DE BALANCE
+
+Crea un canal de texto visible para los miembros que deben leer los avisos.
+Al bot dale Ver canal, Enviar mensajes, Insertar enlaces y Leer el historial.
+Un administrador lo vincula una vez con:
+  /configurar-ava balance_logs:#balance-logs
+Si existe un único canal reconocible como #balance-logs se usa automáticamente.
+Los permisos de escritura del canal pueden reservarse al bot y al personal del gremio.
+
+  /add-bal usuario:@Jugador cantidad:500000 motivo:Premio del gremio
+  /retirar usuario:@Jugador cantidad:125000 motivo:Reembolso de equipo
+El motivo es obligatorio y público. El recibo muestra jugador, responsable, motivo,
+cantidad con signo, saldo anterior, saldo nuevo, hora y número de movimiento.
+El organizador recibe en privado el enlace al mensaje. Si Discord no puede publicar,
+el movimiento sigue guardado y el bot reintenta la publicación sin repetir el débito
+o el crédito. No repitas el comando: sería otra operación. Los ajustes anteriores a
+esta versión no se vuelven a anunciar. /money y /give-bal conservan su privacidad.
+
+Permisos: /add-bal para Gestión del servidor o Administrador; /retirar también para
+el Caller configurado. Pagar y consultar AVA pendientes sigue siendo exclusivo de Economy.
+
+4. COPIAS DIARIAS Y RECUPERACIÓN
+
+El bot en marcha crea una copia en su primer ciclo de cada día UTC; revisa el estado
+cada 15 minutos y reintenta salidas pendientes. Incluye configuraciones del gremio,
+inscripciones, pagos, saldos y registros de la misma SQLite. No incluye tokens, archivos
+de Windows ni fotos originales (la base V22 conserva los enlaces de /cuentas).
+Las copias .sqlite3.gz se guardan en la subcarpeta copias de AVARAID_DATOS o de la
+ruta predeterminada indicada arriba. Conserva las últimas 14 copias locales. Si hay
+un destino externo configurado, no purga las copias pendientes. No borra las externas.
+
+Elige UN destino externo. Sin destino configurado solo hay protección local.
+
+• En Windows abre COPIAS_WINDOWS.bat → 1 y selecciona una carpeta privada dentro de
+  OneDrive que ya sincronice, o una carpeta en otra computadora/unidad de red.
+  La elección se guarda fuera del programa y surte efecto en el próximo ciclo.
+  La opción 2 muestra la última fecha verificada; la opción 3 hace la copia diaria
+  en el momento con el bot cerrado. Una carpeta del mismo disco no te protege si se
+  pierde ese disco. Con OneDrive espera el icono de sincronización y verifica que
+  el archivo aparece en tu nube: AvaRaid solo puede comprobar la carpeta local.
+  Alternativa: la variable AVARAID_COPIAS_CARPETA puede señalar una ruta absoluta,
+  ya existente y fuera de la carpeta de datos del bot.
+
+• En Render o en otro servidor puedes usar un bucket privado de AWS S3, separado
+  del disco del bot. En Environment configura:
+    AVARAID_BACKUP_BUCKET  = nombre de tu bucket privado
+    AVARAID_BACKUP_PREFIX  = avaraid/mi-gremio  (opcional)
+    AWS_DEFAULT_REGION    = región del bucket
+    AWS_ACCESS_KEY_ID y AWS_SECRET_ACCESS_KEY = credenciales de ese destino
+  Si usas credenciales temporales, incluye AWS_SESSION_TOKEN mientras sean válidas.
+  El prefijo debe ser exclusivo de esta instalación. Conserva el bloqueo de acceso
+  público. Da a la identidad del bot permisos s3:PutObject y s3:GetObject en ese
+  prefijo (y s3:AbortMultipartUpload para limpiar cargas grandes interrumpidas).
+  No necesita permiso de borrar objetos. Si deseas limitar el historial externo,
+  usa la retención del bucket. El coste de S3 depende de tu cuenta.
+  El bot sube el archivo, lo descarga, compara el SHA-256 y restaura una base de
+  prueba para comprobar su integridad. Una entrega fallida permanece pendiente.
+  Con una carpeta de red también vuelve a leer y verificar el archivo de destino.
+
+Para consultar o recuperar desde la carpeta del programa:
+  python copias.py estado
+  python copias.py verificar "ruta/ava-AAAA-MM-DD.sqlite3.gz"
+  python copias.py restaurar "ruta/archivo.sqlite3.gz" --salida "recuperada.sqlite3"
+Para S3, descarga primero el .sqlite3.gz del día deseado desde tu bucket (el nombre
+incluye fecha y huella). Restaurar solo admite un nombre de salida NUEVO y verifica
+la base antes de entregarla. No reemplaza el original ni opera desde un canal de Discord.
+
+Si vas a usar esa copia en producción: detén completamente el bot, aparta la base
+actual y sus archivos -wal y -shm, si existen, como un mismo conjunto en una carpeta
+de respaldo. Con el proceso aún detenido, pon la base ya verificada como
+avalonianas.sqlite3 en la carpeta de datos. Conserva el conjunto anterior hasta
+comprobar /money y una AVA conocida. Se recupera el estado que había el día elegido.
+
+5. CANCELACIÓN, SILVER TABS Y OTROS COMANDOS
+
+/cancelar-ava mantiene el recuadro rojo «RAID CANCELADA» en la convocatoria, sin los
+botones, y «EVENTO CANCELADO» con fecha, evento, hora y autor en #ava-logs.
+Si no hay autor histórico, el anuncio dice «La actividad […] fue cancelada» y el
+registro indica «Sin registrar». /cuentas conserva el comportamiento de la V22.
+
+/crear-ava abre la convocatoria y el hilo de inscripción. La hora se introduce en UTC.
+/configurar-ava elige Caller, Core, Economy, avisos, registro, Silver Tab y balance_logs.
+/editar-build y /editar-loot cambian las configuraciones para futuras AVA.
+/iniciar-ava empieza la actividad; también puede iniciarse a la hora programada.
+/money, /money-top, /historial-de-depositos y /give-bal consultan o transfieren silver.
+/ayuda-ava muestra la guía rápida. /reset-economia sigue limitado a la administración.
+
+6. SI LO ALOJAS EN RENDER
+
+Usa un Background Worker de Python con un disco persistente montado en /var/data.
+Sube los .py del directorio principal, composiciones.json y requirements.txt a un repo
+privado. No subas .env, bases ni copias. Conserva todo el código de esta versión:
+ahora incluye avisos_economia.py, seguimiento.py y copias.py.
+  Build: pip install -r requirements.txt && python main.py --comprobar
+  Start: python -u main.py
+  Variables: DISCORD_TOKEN (secreto), AVARAID_DATOS=/var/data.
+  Para copias en S3 añade las variables del apartado 4.
+El disco persistente no sustituye la copia externa. Si migras desde Windows y tienes
+saldos, transfiere la base respaldada antes de poner el bot en servicio. Si ya está
+en Render, conserva el disco, AVARAID_DATOS y las variables de entorno al actualizar
+el código. Comprueba en Logs que conectó AvaRaid 22.1.
+
+Documentación de referencia:
+  https://render.com/docs/background-workers
+  https://render.com/docs/disks
+  https://render.com/docs/configure-environment-variables
+  https://docs.aws.amazon.com/boto3/latest/reference/services/s3/client/upload_file.html
+
+
+ACTUALIZACIÓN — RECIBOS PÚBLICOS DE BALANCE
+-----------------------------------------
+- /add-bal y /retirar muestran una tarjeta «💸 BALANCE ACTUALIZADO»
+  en verde al añadir silver y rojo al retirarlo.
+- Incluye el jugador, la cantidad con signo, saldo anterior y saldo nuevo.
+- Si existe balance_logs en /configurar-ava, la tarjeta pública aparece allí.
+  Si no hay un canal configurado, aparece en el canal desde el que se
+  ejecuta el comando, visible para quienes tengan acceso a ese canal.
+- La confirmación para quien ejecuta el comando sigue siendo privada,
+  pero la tarjeta NO es privada.
+- Si Discord no permite enviar el recibo, el saldo queda registrado y el
+  bot reintenta la publicación; no vuelvas a ejecutar el comando para evitar
+  generar un segundo ajuste.
+- Los motivos y responsables quedan almacenados en el historial de SQLite.
+- El token del paquete anterior no fue modificado.
